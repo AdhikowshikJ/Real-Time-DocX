@@ -10,14 +10,14 @@ const genAI = new GoogleGenerativeAI(
   process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""
 );
 
-// Updated styled components with dark theme
+// Styled components remain the same
 const StyledContent = styled(Popover.Content, {
   backgroundColor: "#09111f",
   padding: "4px",
   width: "300px",
   boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.4)",
   border: "1px solid #2f3042",
-  zIndex: 100, // Subtle border matching theme
+  zIndex: 100,
 });
 
 const SuggestionItem = styled("div", {
@@ -25,10 +25,9 @@ const SuggestionItem = styled("div", {
   cursor: "pointer",
   borderRadius: "4px",
   fontSize: "14px",
-  color: "#a9b1d6", // Light text color matching theme
-
+  color: "#a9b1d6",
   "&:hover": {
-    backgroundColor: "#0f1c34", // Slightly lighter than background for hover
+    backgroundColor: "#0f1c34",
   },
 });
 
@@ -43,14 +42,14 @@ const Scrollbar = styled(ScrollArea.Scrollbar, {
   userSelect: "none",
   touchAction: "none",
   padding: "2px",
-  background: "#1a1b26", // Dark background matching theme
+  background: "#1a1b26",
   transition: "background 160ms ease-out",
   '&[data-orientation="vertical"]': { width: "8px" },
 });
 
 const ScrollThumb = styled(ScrollArea.Thumb, {
   flex: 1,
-  background: "#0f1c34", // Scroll thumb color matching theme
+  background: "#0f1c34",
   borderRadius: "10px",
   position: "relative",
   "&::before": {
@@ -76,7 +75,6 @@ export function AutoSuggestionsPlugin(): JSX.Element {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [anchorPos, setAnchorPos] = useState({ x: 0, y: 0 });
-  const [queryTimeout, setQueryTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const generateSuggestions = useCallback(async (text: string) => {
     try {
@@ -118,40 +116,45 @@ export function AutoSuggestionsPlugin(): JSX.Element {
   );
 
   useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
+    // Handler for keydown events
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Space" || event.key === " ") {
+        editor.update(() => {
+          const selection = $getSelection();
+          if (!$isRangeSelection(selection)) return;
 
-        const node = selection.anchor.getNode();
-        if (!node) return;
+          const node = selection.anchor.getNode();
+          if (!node) return;
 
-        const domSelection = window.getSelection();
-        if (domSelection && domSelection.rangeCount > 0) {
-          const range = domSelection.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-          setAnchorPos({ x: rect.left, y: rect.bottom + 8 }); // Added offset for better positioning
-        }
+          const textContent = node.getTextContent();
+          const cursorPosition = selection.anchor.offset;
+          const words = textContent.slice(0, cursorPosition).split(" ");
+          const currentWord = words[words.length - 1] || "";
 
-        const textContent = node.getTextContent();
-        const cursorPosition = selection.anchor.offset;
-        const currentWord =
-          textContent.slice(0, cursorPosition).split(" ").pop() || "";
+          // Only generate suggestions if the word is at least 3 characters
+          if (currentWord.length >= 3) {
+            // Update anchor position
+            const domSelection = window.getSelection();
+            if (domSelection && domSelection.rangeCount > 0) {
+              const range = domSelection.getRangeAt(0);
+              const rect = range.getBoundingClientRect();
+              setAnchorPos({ x: rect.left, y: rect.bottom + 8 });
+            }
 
-        if (currentWord.length >= 3) {
-          if (queryTimeout) clearTimeout(queryTimeout);
-
-          const timeout = setTimeout(() => {
             generateSuggestions(currentWord);
-          }, 500);
+          }
+        });
+      } else if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
 
-          setQueryTimeout(timeout);
-        } else {
-          setIsOpen(false);
-        }
-      });
-    });
-  }, [editor, generateSuggestions, queryTimeout]);
+    // Add and remove event listener
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.addEventListener("keydown", handleKeyDown);
+    };
+  }, [editor, generateSuggestions]);
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>

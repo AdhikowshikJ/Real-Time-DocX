@@ -27,6 +27,7 @@ import { DeleteModal } from "../DeleteModal";
 import { GeminiPlugin } from "./plugins/GeminiPlugin";
 import { AutoSuggestionsPlugin } from "./plugins/AutoSuggestionsPlugin";
 import { ExportPlugin } from "./plugins/ExportPlugin";
+import InlineAutoSuggestionsPlugin from "./plugins/InlineAutoSuggestionsPlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -88,7 +89,8 @@ export function Editor({
             </div>
           )}
           <GeminiPlugin />
-          <AutoSuggestionsPlugin />
+          {/* <AutoSuggestionsPlugin /> */}
+          <InlineAutoSuggestionsPlugin />
 
           <LiveblocksPlugin>
             <FloatingComposer className="w-[350px]" />
