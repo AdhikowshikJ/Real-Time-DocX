@@ -26,6 +26,7 @@ import Comments from "../Comments";
 import { DeleteModal } from "../DeleteModal";
 import { GeminiPlugin } from "./plugins/GeminiPlugin";
 import { AutoSuggestionsPlugin } from "./plugins/AutoSuggestionsPlugin";
+import { ExportPlugin } from "./plugins/ExportPlugin";
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -59,9 +60,14 @@ export function Editor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="editor-container size-full">
-        <div className="toolbar-wrapper flex min-w-full justify-between">
+        <div className="toolbar-wrapper flex min-w-full  items-center gap-2">
           <ToolbarPlugin />
-          {currentUserType === "editor" && <DeleteModal roomId={roomId} />}
+          {currentUserType === "editor" && (
+            <>
+              <ExportPlugin />
+              <DeleteModal roomId={roomId} />
+            </>
+          )}
         </div>
 
         <div className="editor-wrapper flex flex-col items-center justify-start">
