@@ -65,12 +65,12 @@ export function GeminiModal({ isOpen, onClose }: GeminiModalProps) {
       <DialogContent className="sm:max-w-[525px] text-white bg-[#09111f] dark:bg-slate-900 border dark:border-slate-700 shadow-lg">
         <DialogHeader className="space-y-2 pb-4  dark:border-slate-700">
           <DialogTitle className="  text-white flex gap-2 ">
-            Ask Gemini <Sparkles className="h-4 w-4 text-white" />
+            Ask AI <Sparkles className="h-4 w-4 text-yellow-300" />
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <Input
-            placeholder="What would you like to know?"
+            placeholder="Create content with AI"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => {
@@ -88,18 +88,18 @@ export function GeminiModal({ isOpen, onClose }: GeminiModalProps) {
             </div>
           )}
         </div>
-        <DialogFooter className="flex justify-end space-x-2 pt-4  dark:border-slate-700">
+        <DialogFooter className="flex justify-end md:space-x-2 pt-4  dark:border-slate-700">
           <Button
             variant="outline"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-white dark:text-slate-300 bg-transparent border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+            className="px-4 py-2 text-sm font-medium w-full sm:w-fit text-white dark:text-slate-300 bg-transparent border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
           >
             Cancel
           </Button>
           <Button
             onClick={fetchGeminiResponse}
             disabled={!prompt || isLoading}
-            className="px-4 py-2 text-sm font-medium border text-white bg-[#1a2d50] hover:bg-[#5a83d1] hover:border-sl dark:bg-blue-600 dark:hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 my-2 sm:my-0 text-sm  sm:w-fit font-medium border w-full  text-white bg-[#1a2d50] hover:bg-[#5a83d1] hover:border-sl dark:bg-blue-600 dark:hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Generating..." : "Generate"}
           </Button>
